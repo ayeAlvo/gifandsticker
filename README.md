@@ -1,3 +1,10 @@
+# Buscador de Gifs, consumiendo una API. Hecho con React
+
+
+![home](https://user-images.githubusercontent.com/81052206/159365117-36da47f1-e1a8-487d-a733-4e998041c4b4.jpg)
+
+#
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
