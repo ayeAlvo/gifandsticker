@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Loader from './Loader';
 import Create from '../components/CreateGif';
+import Paginate from '../components/Paginate';
 
 const Giphy = () => {
   const [giphysList, setGiphysList] = useState([]);
@@ -10,17 +11,25 @@ const Giphy = () => {
   const [isError, setIsError] = useState(false);
   const [isUrlImage, setIsUrlImage] = useState('');
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(25);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = giphysList.slice(indexOfFirstItem, indexOfLastItem);
+
   useEffect( () => {
     const fetchGiphysTrending = async () => {
       setIsLoading(true); //esta cargando
       try{
         const response = await axios('https://api.giphy.com/v1/gifs/trending', {
           params: {
-            api_key: 'zoqDYlP5tILk8SUyn8SZrv5nKLxaiAE6'
+            api_key: 'zoqDYlP5tILk8SUyn8SZrv5nKLxaiAE6',
+            limit: 100, // solo me deja trar un maximo de 50 gif
           }
         });
         const data = response.data.data;     
         setGiphysList(data);
+        console.log(data.length);
         
       }catch (err){
         setIsError(true);
@@ -39,7 +48,7 @@ const Giphy = () => {
       return <Loader />  
     }
 
-    return giphysList.map(gif => {
+    return currentItems.map(gif => {
       return (
         <div className="gif" key={gif.id}>
           <img src={gif.images.fixed_height.url} onClick={urlImage} className="choose" />
@@ -86,6 +95,10 @@ const Giphy = () => {
     setIsLoading(false);  
   };
 
+  const pageSelected = pageNumber => {
+    setCurrentPage(pageNumber);
+  }
+
   // const imageChoose = document.querySelector('.choose');
   const urlImage = e => {
     // console.log(e.target.src);
@@ -103,6 +116,8 @@ const Giphy = () => {
         <input type="text" placeholder="Search" className="input" value={search} onChange={searchChange} />
         <button type="submit" className="btn btn-outline-light mx-2 btn-search" onClick={searchGifs} >Filter</button>
       </form>
+
+      <Paginate pageSelected={pageSelected} currentPage={currentPage} itemsPerPage={itemsPerPage} totalItems={giphysList.length}/>
 
       <a href="#meme" className="btnUp"><i className="fa-solid fa-angles-up"></i></a>
       <div className="container-md gifs">{renderGifs()}</div>
